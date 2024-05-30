@@ -17,29 +17,10 @@ const originalWidth = 1200; // set the original width
 const originalHeight = 800; // set the original height
 let aspectRatio = originalWidth / originalHeight; //Aspect ratio of the canvas
 
-//create an array to hold the shapes
-let shapes = [];
-
-//Let's make a variate to hold the audio file
 let song;
-
-//Let's make a variate to hold the FFT object
 let fft;
-
-//Let's make a variate for the number of bins in the FFT object
-//This is how many frequency bands we will have
-//The number of bins must be a power of 2 between 16 and 1024 -
-//Try changing this value
-let numBins = 128;
-
-//We will also have a variable for the smoothing of the FFT
-//This averages the values of the frequency bands over time so it doesn't jump around too much
-//Smoothing can be a value between 0 and 1
-//try changing this value
-let smoothing = 0.5;
-
-//this time we will make a global variable for the button so we can access it in the windowResized function
-let button;
+let particles = []
+let smoothing = 0.8
 
 
 
@@ -67,52 +48,30 @@ class Brush {
   }
 }
 
-//this class will create and manage a random shape with noise
-class randomShape {
-  //the constructor will take a type of shape as an argument - circle or square
-  constructor(type) {
-    this.type = type;
-    //randomize the x and y position of the shape, these are limited to 80% of the width and height
-    this.x = random(0.5);
-    this.y = random(1);
-
-    //randomize the size of the shape between 5% and 20% of the width
-    this.size = random(0.05, 0.1);
-    //randomize the color of the shape
-    this.color = [random(255), random(255), random(0)];
-    this.scale = 2;
+class particle {
+  constructor() {
+    this.pos = p5.Vector.random2D().mult(300);
+    this.vel = createVector(0, 0);
+    this.acc = this.pos.copy().mult(random(0.0003,0.00003))
+    
+    this.w = random(3,5)
   }
 
-  display(scale) {
-    this.scale = scale;
-    //use the instance colour to fill the shape
-    fill(this.color);
-    noStroke();
-    //Get the smaller dimension of the canvas
-    let minDimension = min(width, height); 
+  update() {
+    this.vel.add(this.acc);
+    this.pos.add(this.vel);
+  }
 
-    //Use the smaller dimension to maintain aspect ratio
-    //calculate the size of the shape based on the smaller dimension - 
-    //Remember the sizes were made in percentages so this will scale correctly
-    let size = this.size * minDimension;
 
-    //We now multiply the size by the scale to make the shapes change size based on the input to the display function
-    size = size * this.scale;
-
-    //The x position is the x value of the shape multiplied by the width of the canvas - same idea for the y position
-    let x = this.x * width;
-    let y = this.y * height;
-
-    //draw the shape based on the type
-
-    switch (this.type) {
-      case "circle":
-        ellipse(x, y, size, size);
-        break;
-    
-    }
+  show() {
+    stroke(255,204,0)
+    fill(255);
+    ellipse(this.pos.x , this.pos.y, 3);
+    loop()
   }
 }
+
+
 
 
 
@@ -121,8 +80,7 @@ class randomShape {
 function preload() {
   img = loadImage('/assets/quay.jpg'); //Load the main image
   logoImage = loadImage('assets/Image annotation.png'); //Load the logo image
-  //audio file from freesound https://freesound.org/people/multitonbits/sounds/383935/?
-  song = loadSound("sound assets/东东的处女座.mp3");
+  song = loadSound ('sound assets/东东的处女座.mp3')//load the music made and recorded by myself
 } 
 
 function setup() {
@@ -147,44 +105,8 @@ function setup() {
   ];
 
   //Let's add a variable of speed and this technique is from https://www.geeksforgeeks.org/p5-js-framerate-function/
-  frameRate(25);
-
-  // Create a new instance of p5.FFT() object
-  fft = new p5.FFT(smoothing, numBins);
-
-  song.connect(fft);
-
-  //Add a button for play/pause
-  //We cannot play sound automatically in p5.js, so we need to add a button to start the sound
-  button = createButton("Play/Pause");
-
-  //set the position of the button to the bottom center
-  button.position((width - button.width) / 2, height - button.height - 2);
-
-  //We set the action of the button by choosing what action and then a function to run
-  //In this case, we want to run the function play_pause when the button is pressed
-  button.mousePressed(play_pause);
-
-  //set the colour mode to HSB
-  colorMode();
-
-  //lets make a shape for each frequency band
-  for (let i = 0; i < numBins; i++) {
-    /*
-    Randomly choose between 'circle' and 'square'
-    This is a ternary operator - it is a shorthand if statement
-    It is the same as writing:
-    if(Math.random() > 0.5){
-     shapeType = "circle";
-    } else {
-     shapeType = "square";
-    }
-    */
-    let shapeType = Math.random() > 0.1 ? "circle" : "circle";
-    shapes.push(new randomShape(shapeType));
-  }
-
-
+  frameRate(100);
+  fft = new p5.FFT()
 }
 
 function draw() {
@@ -217,6 +139,7 @@ function draw() {
     }
   }
 
+
   // Draw the logo image in the center of the canvas
   let logoAspect = logoWidth / logoHeight; // Calculate logo aspect ratio
   let scaleFactor = 0.6; // Scale factor to resize the logo image and this technique comes from https://www.geeksforgeeks.org/scale-factor/
@@ -231,27 +154,21 @@ function draw() {
   // Draw the image in the centre of the canvas, offsetting the image by half its width and height
   image(logoImage, (width / 2) - (logoWidth / 2), (height / 2) - (logoHeight / 2), logoWidth, logoHeight);
 
-  //The analyze() method returns an array of amplitude values across the frequency spectrum
-  //Amplitude values range between 0 and 255, where at 0, the sound at the specific frequency band is silent
-  //and at 255, the sound at the specific frequency band is at its loudest
-  let spectrum = fft.analyze();
 
-  for (let i = 0; i < numBins; i++) {
-    //We divide the spectrum values by 255 so they are in the range 0 - 1
-     shapes[i].display(spectrum[i]/255);
+//NEW PARTICLE WAS MADE TO FEEL LIKE RESET SUNSHINE
+  let p = new particle()
+  particles.push(p)
+
+  for (let i = 0; i < particles.length; i++) {
+  particles[i].update()
+  particles[i].show()
   }
+
+
+
 }
 
 
-function play_pause() {
-  if (song.isPlaying()) {
-    song.stop();
-  } else {
-    //we can use song.play() here if we want the song to play once
-    //In this case, we want the song to loop, so we call song.loop()
-    song.loop();
-  }
-}
 
 // Our function to get the closest color from the palette and this technique comes from https://happycoding.io/tutorials/p5js/images/image-palette
 function getPaletteColor(imgColor) {
@@ -289,6 +206,17 @@ function getPaletteColor(imgColor) {
   return targetColor;// Return the closest color
 }
 
+
+function mouseClicked() {
+  if (song.isPlaying()){
+    song.pause()
+    noLoop()
+  } else {
+    song.play()
+    loop()
+  }
+}
+
 function windowResized() {
   //when drag the window to different size, it will automatically calculate the changes and let the image resize and the window change.
   let canvasSize = calculateCanvasSize();
@@ -296,11 +224,7 @@ function windowResized() {
   calculateImageDrawProps(canvasSize.canvasWidth, canvasSize.canvasHeight);
   y = 0; //Restart palette effect
   loop(); // restart the draw loop
-
-  //Reset the position of the button
-  button.position((width - button.width) / 2, height - button.height - 2);
 }
-
 
 function calculateCanvasSize() {
    //initiallize canvas dimensions
