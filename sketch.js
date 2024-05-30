@@ -192,7 +192,7 @@ function draw() {
 
   beginShape() //starts a new shape
 
-  //This loop iterates from 0 to 180, representing degrees in a haqlf circle. 
+  //This loop iterates from 0 to 180, representing degrees in a half circle. 
   //The index i is used to calculate the positions of points in the shape.
   for (let i = 0; i<= 180; i++) { 
 

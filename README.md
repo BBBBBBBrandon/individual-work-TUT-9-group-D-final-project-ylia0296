@@ -13,6 +13,7 @@ My chosen prototype was focus on the audio interaction. When you enter the live 
 - I also change the stroke size of the brush to make the paint looked more
 - Waveform (vibration) effect
 - Particles animation
+- When the song reached its most rousing climax. the sunshine will pumping out very quickly.
 
 
 
