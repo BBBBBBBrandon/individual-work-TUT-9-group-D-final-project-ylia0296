@@ -165,6 +165,28 @@ function draw() {
   }
 
 
+// new added sun shape. and vibrate with the music rythm
+
+  stroke(255, 204,0)
+  noFill()
+
+  translate(0, 0)
+
+  let wave = fft.waveform()
+
+ for (let t = -1; t<=1; t+= 2) {
+  beginShape()
+  for (let i = 0; i<= 180; i += 0.5) {
+    let index = floor(map(i,0,180,0,wave.length - 1))
+    let r = map(wave[index],-1,1,150,350)
+    let x = r* sin(i) * t
+    let y = r* cos(i)
+    vertex(x,y)
+  }
+  endShape()
+ }
+
+
 
 }
 
