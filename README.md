@@ -1,48 +1,39 @@
-Instructions on how to interact with the work; e.g. move the mouse slowly over the screen, click the play button and wait for the music to start, load the page and the animation will happen over x number of seconds or whatever is needed to make your code come alive.
-Details of your individual approach to animating the group code.
-  Which did you choose to drive your individual code: audio, interaction, Perlin noise or time.
-
-  Which properties of the image will be animated and how; highlighting how it is unique from other group members (i.e. one changes colours, the other component sizes, another reveals only some components at a time, etc.). You will need to work with your group members to make sure your work is sufficiently different from each other.
-
- References to inspiration for animating your individual code; these can be images (still or gifs). How did they influence your submission?
-
- A short technical explanation of how your individual code works to animate the image and any appropriate references.
- 
-  If you made a lot of changes to the group code, explain it here.
-  If you use tools and technique from outside the course, explain why you used them and how they work.
-  If you copy a technique from the Internet, explain how it works, why you used it, and where it came from.
 
 
 
+# Function prototype (ylia0296_Interactive Audio)
+## Interactive Instructions
+My chosen prototype was focus on the audio interaction. When you enter the live server, you could just simply click anywhere on the screena and the song will play. This song was sang by myself which is a famous Chinese song.The sunshine effect will start to animate. You may especially focus on the red sun. It will viberate with the rythm of the music, and please enjoy the reset sunshine not "sun set".
 
-  Function prototype (xcai0182_userinput)
-Interaction Instructions
-
-
-
-##Animation Methods:
-
-Oil painting brush effect: Generates an oil painting effect based on the image's colour. This effect comes from the group
-Jump effect: Jumps to the original image when the oil painting image ends
-
-###Differences with team members:
-The group members chose Perlin noise and randomness and Audio, which differs from my animation effect.
-Perlin noise and randomness change the wave effect and add fish and bird textures. Audio controls the picture with sound.
-
-
-##Inspiration for animating:
+## Details of animation method
+- Oil painting brush effect: Generates an oil painting effect based on the image's colour. This effect comes from the group
+- The chosen one that drove on my individual code is audio. This image was drew to a oilic painting effect and with the theme of sunset. I would like to make it opposite to the sunset which is sunshine. So, I added particle elements to represent the sunshine and the sun components. 
+- The reason why I do this is because oilic painting was present by loads of particles or points. Thus, I'd like to refer to it. Meanwhile,the sun was made to waveform which it can vibrate with the rythm of the song in real-time. 
+- Mine was completely different from the other group members.As the others are perlin noise and user control
+- I also change the stroke size of the brush to make the paint looked more
+- Waveform (vibration) effect
+- Particles animation
 
 
 
-##Major changes - Technical explanation ###Group coding change:
 
-During the iteration, I found a bug. After loading the oil painting image, mousePressed() could not be used. Therefore, I chose to let the oil painting automatically jump to the original image. So I removed noLoop() so that the draw() function can continue to execute when mousePressed() is called. I also added clear() so it can automatically jump to the original image after loading the oil painting image.
+## Inspiration for animating:
+- The waveform and particles are all inspired during browsing the programming video course[link inspiration](https://www.youtube.com/watch?v=uk96O7N1Yo0). 
+- Inspiration also camed from the Live Van Gogh exhibition. [link](https://vangoghexpo.com/). I have experienced myself and it was emersive and fasinating. Although, I have to put more effort to achieve that outcome, it truly gave me hints of moving elements.
 
 
-###External techniques:
+## Technical explanation 
 
-this technique is from programming course. Added clear() so it can automatically jump to the original image after loading the oil painting image. clear(); // Clear the canvas image(img, 0, 0, img.width, img.height); //Draw quay.jpg at original size
-###Internet references:
+During the iteration, I did not chang toomuch of our group code. The frame rate was changed to 100 which was faster then previous. It needs to match with the song I made. Meanwhile, I changed the brush stroke to make the paint more neat. The main adjustments are new added `class particle` and `waveform()` with `beginShape` and `endShape`. 
+- sunshine particles
+   - Create class, then set up initial position, velocity, acceleration, and width of particles. In addtion, update velocity based on acceleration and update position based on velocity. Finally. showcase the objects.
+- waveform 
+   - function draw() the wave form. Loop runs twice, with "t" taking the values -1 and 1. It ensures that the waveform is drawn symmetrically on both sides of the origin to a circle. `for (let i = 0; i<= 180; i++)` : This loop iterates from 0 to 180, representing degrees in a half circle. The index i is used to calculate the positions of points in the shape.
 
-The code of night refers to the image filter example in https://editor.p5js.org/ZL/sketches/9Bm0K5HBh. By combining the applyFilter variable and the mousePressed function, clicking the mouse will display the original image and superimpose the dark blue filter, presenting a sense of visual transition from fantasy to reality, from sunset to night.
-The star referred to the Star example of https://editor.p5js.org/p5/sketches/Form:_Star. The painting state is saved and restored through push() and pop(), and the stars are rotated using translate() and rotate().
+
+### External techniques:
+- This "waveform" technique was outside the tutorial class from https://www.youtube.com/watch?v=uk96O7N1Yo0 and chatgpt. `let wave = fft.waveform()` it returns an array of amplitude values (ranging from -1 to 1) representing the audio waveform. This array will be used to draw the visualization.
+- In the "class particle", update was new and from [link](https://www.youtube.com/watch?v=uk96O7N1Yo0). ```update() {
+    this.vel.add(this.acc)}```: updated velocity based on acceleration.
+
+
