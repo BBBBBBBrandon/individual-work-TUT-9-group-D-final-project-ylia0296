@@ -165,9 +165,8 @@ function draw() {
   }
 
 
-// new added sun shape. and vibrate with the music rythm
-
-  stroke(255, 204,0)
+  // new added sun shape. and vibrate with the music rythm
+  stroke(255,0,0)
   noFill()
 
   translate(0, 0)
@@ -176,16 +175,15 @@ function draw() {
 
  for (let t = -1; t<=1; t+= 2) {
   beginShape()
-  for (let i = 0; i<= 180; i += 0.5) {
+  for (let i = 0; i<= 180; i++) {
     let index = floor(map(i,0,180,0,wave.length - 1))
-    let r = map(wave[index],-1,1,150,350)
-    let x = r* sin(i) * t
+    let r = map(wave[index],-1,1,150,450)
+    let x = r* sin(i)*t
     let y = r* cos(i)
     vertex(x,y)
   }
   endShape()
  }
-
 
 
 }
