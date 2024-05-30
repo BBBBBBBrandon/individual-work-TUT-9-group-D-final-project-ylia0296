@@ -17,10 +17,21 @@ const originalWidth = 1200; // set the original width
 const originalHeight = 800; // set the original height
 let aspectRatio = originalWidth / originalHeight; //Aspect ratio of the canvas
 
+// make a variate to hold the audio file
 let song;
+
+// make a variate to hold the FFT object
 let fft;
-let particles = []
-let smoothing = 0.8
+
+//create an array to hold the particles
+let particles = [];
+
+//We will also have a variable for the smoothing of the FFT
+//This averages the values of the frequency bands over time so it doesn't jump around too much
+//Smoothing can be a value between 0 and 1
+//try changing this value
+let smoothing = 0.5
+
 
 
 
@@ -48,25 +59,30 @@ class Brush {
   }
 }
 
+
+
+// this is an ourside technique that draws particles, it was from https://www.youtube.com/watch?v=uk96O7N1Yo0 and chatgpt
 class particle {
   constructor() {
-    this.pos = p5.Vector.random2D().mult(300);
-    this.vel = createVector(0, 0);
-    this.acc = this.pos.copy().mult(random(0.0003,0.00003))
+    this.pos = p5.Vector.random2D().mult(300);//initial position
+    this.vel = createVector(0, 0);//initial velocity
+    this.acc = this.pos.copy().mult(random(0.0003,0.00003)) // Initialize acceleration
     
-    this.w = random(3,5)
+    this.w = random(3,5) //width of the particles
   }
 
   update() {
-    this.vel.add(this.acc);
-    this.pos.add(this.vel);
+    this.vel.add(this.acc); //updated velocity based on acceleration
+
+    this.pos.add(this.vel);//updated position based on velocity
   }
 
 
   show() {
-    stroke(255,204,0)
-    fill(255);
-    ellipse(this.pos.x , this.pos.y, 3);
+    stroke(255,204,0);//set stroke color
+    strokeWeight(1);//stroke weight
+    fill(255); 
+    ellipse(this.pos.x , this.pos.y, 3);//draw particles
     loop()
   }
 }
@@ -87,6 +103,7 @@ function setup() {
   // We will make the canvas the same size as the image using its properties
   let canvasSize = calculateCanvasSize();
   createCanvas(canvasSize.canvasWidth, canvasSize.canvasHeight);
+  angleMode(DEGREES)
   // Let's calculate the aspect ratio of the image - this will never change so we only need to do it once
   img.resize(canvasSize.canvasWidth, canvasSize.canvasHeight);
   imgDrwPrps.aspect = img.width / img.height;
@@ -106,7 +123,7 @@ function setup() {
 
   //Let's add a variable of speed and this technique is from https://www.geeksforgeeks.org/p5-js-framerate-function/
   frameRate(100);
-  fft = new p5.FFT()
+  fft = new p5.FFT(0.1)
 }
 
 function draw() {
@@ -155,36 +172,49 @@ function draw() {
   image(logoImage, (width / 2) - (logoWidth / 2), (height / 2) - (logoHeight / 2), logoWidth, logoHeight);
 
 
+
+  // new added sun shape. and vibrate with the music rythm
+  stroke(255,0,0);//stroke color
+  noFill();
+  strokeWeight(2); 
+
+  translate(20, 20); //position of the sunshape viberate wave circle
+
+
+//this waveform technique was outside the tutorial class from https://www.youtube.com/watch?v=uk96O7N1Yo0 and chatgpt
+  //returns an array of amplitude values (ranging from -1 to 1) representing the audio waveform. 
+  //This array will be used to draw the visualization.
+  let wave = fft.waveform() 
+
+  
+ for (let t = -1; t<=1; t+= 2) {  //This loop runs twice, with t taking the values -1 and 1. 
+  //It ensures that the waveform is drawn symmetrically on both sides of the origin. To a circle.
+
+  beginShape() //starts a new shape
+
+  //This loop iterates from 0 to 180, representing degrees in a haqlf circle. 
+  //The index i is used to calculate the positions of points in the shape.
+  for (let i = 0; i<= 180; i++) { 
+
+    let index = floor(map(i,0,180,0,wave.length - 1)); //ensuring that each point on the half circle corresponds to a sample from the waveform.
+
+    let r = map(wave[index],-1,1,150,450);// determines the distance of the point from the center. radius
+    let x = r* sin(i)*t; // t is used to mirror the points across the origin, effectively drawing the shape symmetrically.
+    let y = r* cos(i);
+    point(x , y) //coorinates of the waveform.
+  }
+  endShape()
+ }
+
+
 //NEW PARTICLE WAS MADE TO FEEL LIKE RESET SUNSHINE
   let p = new particle()
   particles.push(p)
 
   for (let i = 0; i < particles.length; i++) {
-  particles[i].update()
+  particles[i].update()//calling
   particles[i].show()
   }
-
-
-  // new added sun shape. and vibrate with the music rythm
-  stroke(255,0,0)
-  noFill()
-
-  translate(0, 0)
-
-  let wave = fft.waveform()
-
- for (let t = -1; t<=1; t+= 2) {
-  beginShape()
-  for (let i = 0; i<= 180; i++) {
-    let index = floor(map(i,0,180,0,wave.length - 1))
-    let r = map(wave[index],-1,1,150,450)
-    let x = r* sin(i)*t
-    let y = r* cos(i)
-    vertex(x,y)
-  }
-  endShape()
- }
-
 
 }
 
@@ -227,6 +257,7 @@ function getPaletteColor(imgColor) {
 }
 
 
+//you can click anywhere on the screen to initiate the song. And click once to hold.
 function mouseClicked() {
   if (song.isPlaying()){
     song.pause()
@@ -236,6 +267,7 @@ function mouseClicked() {
     loop()
   }
 }
+
 
 function windowResized() {
   //when drag the window to different size, it will automatically calculate the changes and let the image resize and the window change.
