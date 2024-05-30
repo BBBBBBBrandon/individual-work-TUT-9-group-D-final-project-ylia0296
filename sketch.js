@@ -48,7 +48,7 @@ class Brush {
 
   // Calculate random position within the brush size
   let angle = random(TWO_PI); // Random angle for brush stroke
-  let length = random(this.size * 1.5, this.size * 1.5); // Random length for brush stroke
+  let length = random(this.size * 2, this.size * 2); // Random length for brush stroke
   let dx = cos(angle) * length; // X offset for brush stroke
   let dy = sin(angle) * length; // Y offset for brush stroke
   for (let i = 0; i < 5; i++) { // Draw multiple ellipses for blurred effect
